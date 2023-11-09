@@ -1,5 +1,27 @@
 FROM ubuntu:22.04
 
+LABEL maintainer="21-horie"\
+      version="1.0"\
+      description="ROS2 humbleの環境を構築するDockerfile"
+# 途中の解凍をスキップできるubuntuだと時刻とか聞かれる
+ENV DEBIAN_FRONTEND noninteractive 
+
+ARG USERNAME
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# # userの作成
+# RUN apt-get update && apt-get install -y \
+#     sudo \
+#     && groupadd --gid $USER_GID $USERNAME \
+#     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+#     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+#     && chmod 0440 /etc/sudoers.d/$USERNAME \
+#     && apt-get clean \
+#     && rm -rf /var/lib/apt/lists/*
+
+USER $USERNAME
+
 # Install ROS2
 ENV ROS_DISTRO humble
 RUN apt-get update && apt-get install -y \
@@ -11,9 +33,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get update \
     && apt-get install -y ros-${ROS_DISTRO}-desktop 
 
+## ここまではOK
 # 環境設定
-RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc \
-    && source ~/.bashrc 
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc 
 # 入っていいないものをインストール
 # TODO余計なものがあるかもしれない
 RUN apt-get update && apt-get install -y \
@@ -29,6 +51,8 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-nav2-bringup
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+#TODO ros2_controlのインストール
 
 WORKDIR /ros2_ws
 VOLUME ["/ros2_ws"]

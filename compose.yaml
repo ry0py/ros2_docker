@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    image: app
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - USER_ID=${USER_ID}
+        - GROUP_ID=${GROUP_ID}
+    volumes:
+      - .:/app
+    working_dir: $PWD
