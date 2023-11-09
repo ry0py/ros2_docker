@@ -1,5 +1,13 @@
 FROM ubuntu:22.04
-RUN echo "source /opt/ros/noetic/setup.bash" >> /.bashrc
-WORKDIR /hoge
-# VOLUME ["/hoge"]
-CMD ["bash"]
+
+ARG USERNAME
+ARG USER_UID
+ARG USER_GID
+
+# Create the user
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && apt-get update \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME

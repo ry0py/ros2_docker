@@ -7,8 +7,13 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - USER_ID=${USER_ID}
-        - GROUP_ID=${GROUP_ID}
+        - USER_UID=$USER_UID
+        - USER_GID=$USER_GID
+        - USERNAME=$USERNAME
     volumes:
-      - ./hoge:/hoge
-    working_dir: $PWD
+      - ./hoge:/ros2_ws # 左側にある方のファイルを右側にある方のファイルにマウントする
+    working_dir: /ros2_ws # コンテナ内での作業ディレクトリ(ここで指定したらDockerfileのWORKDIRは無視される)
+    container_name: "aaaaa"
+    user: "${USER_UID}:${USER_GID}"
+    environment:
+      - PS1=root@mycontainer:\w\$
